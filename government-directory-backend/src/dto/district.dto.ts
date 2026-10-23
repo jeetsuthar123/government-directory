@@ -1,0 +1,7 @@
+import { IsBoolean, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+export class DistrictDto {
+  @IsString() @MinLength(2) @MaxLength(150) name!: string;
+  @IsOptional() @IsString() @MaxLength(30) code?: string;
+  @IsOptional() @IsString() @MaxLength(100) state?: string;
+  @IsOptional() @IsBoolean() isActive?: boolean;
+}

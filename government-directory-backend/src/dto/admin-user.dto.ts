@@ -1,0 +1,9 @@
+import { IsArray, IsBoolean, IsEmail, IsIn, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+export class AdminUserDto {
+  @IsString() @MinLength(2) @MaxLength(150) name!: string;
+  @IsEmail() email!: string;
+  @IsOptional() @IsString() @MinLength(8) @MaxLength(100) password?: string;
+  @IsIn(['super_admin','department_admin']) role!: string;
+  @IsOptional() @IsArray() departmentIds?: string[];
+  @IsOptional() @IsBoolean() isActive?: boolean;
+}

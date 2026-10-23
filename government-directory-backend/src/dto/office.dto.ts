@@ -1,0 +1,14 @@
+import { IsBoolean, IsEmail, IsMongoId, IsNumber, IsOptional, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
+export class OfficeDto {
+  @IsMongoId() departmentId!: string;
+  @IsString() @MinLength(2) @MaxLength(150) name!: string;
+  @IsOptional() @IsString() @MaxLength(30) code?: string;
+  @IsMongoId() districtId!: string;
+  @IsOptional() @IsMongoId() blockId?: string;
+  @IsOptional() @IsString() @MaxLength(500) address?: string;
+  @IsOptional() @IsString() @MaxLength(30) phone?: string;
+  @IsOptional() @IsEmail() email?: string;
+  @IsOptional() @IsNumber() @Min(-90) @Max(90) latitude?: number;
+  @IsOptional() @IsNumber() @Min(-180) @Max(180) longitude?: number;
+  @IsOptional() @IsBoolean() isActive?: boolean;
+}
