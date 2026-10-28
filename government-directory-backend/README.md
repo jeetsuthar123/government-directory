@@ -1,70 +1,80 @@
-# Government Directory Backend (schema-aligned)
+# Government Directory Backend
 
-This NestJS backend implements the collections and relationships in the supplied architecture diagram.
+NestJS REST API backed by MongoDB. It exposes two separate API surfaces: public, anonymous, read-only directory endpoints, and the existing JWT-protected administrator endpoints. Public access does not weaken the existing CRUD authorization guards.
 
-## Data model
-- `departments`: name, code, shortName, description, isActive, timestamps
-- `districts`: name, code, state, isActive, timestamps
-- `blocks`: districtId reference, name, code, isActive, timestamps
-- `offices`: departmentId, districtId, optional blockId, name, code, address, phone, email, latitude, longitude, isActive, timestamps
-- `designations`: name, code, level, isActive, timestamps
-- `employees`: officeId, designationId, name, employeeCode, mobile, email, dateOfBirth, isPublic, isActive, timestamps
-- `adminUsers`: email, passwordHash, role, departmentIds, isActive
+## Local setup
 
-Mongoose schemas provide ObjectId references, validation, timestamps and indexes. The Employee schema intentionally does not duplicate department/district/block fields: those are derived through Employee -> Office.
+Requirements: Node.js 20+ (Expo app separately requires 22.13+), npm, and MongoDB 6+ locally or a development MongoDB connection string.
 
-## Run locally (PowerShell)
 ```powershell
 Copy-Item .env.example .env
+```
+
+Edit `.env` before startup. Set a random `JWT_SECRET` of at least 32 characters; the API deliberately refuses to start without it. Set `MONGODB_URI`, `PORT` if needed, and `CORS_ORIGINS` to a comma-separated list of trusted browser origins. Do not copy real secrets into source control.
+
+```powershell
 npm install
+npm run build
 npm run seed
 npm run start:dev
 ```
-Swagger: http://localhost:3000/api/docs
 
-Use MongoDB locally or set `MONGODB_URI` to a development Atlas URI in `.env`.
-Do not seed production databases. Seed credentials:
-- `admin@directory.local` / `Admin@12345`
-- `education.admin@directory.local` / `Admin@12345`
+Swagger UI: `http://localhost:3000/api/docs`. Seed is for local development only and refuses to run when `NODE_ENV=production`; it creates demo administrator credentials. Never run the seed script against a production database. To run locally without demo records, omit `npm run seed` and provision admin accounts through a controlled process.
 
-## API
-Prefix: `/api/v1`
-- `POST /auth/login`, `GET /auth/profile`
-- CRUD resources: `/departments`, `/districts`, `/blocks`, `/offices`, `/designations`, `/employees`, `/admin-users`
-- `GET /dashboard/summary`
-All routes other than login require a JWT Bearer token.
+## API routes
 
-List endpoints accept `page`, `limit`, `search`, `sortBy`, `order` and relation filters such as `departmentId`, `districtId`, `blockId`, `officeId`, `designationId`, `isActive`, and `isPublic`. Employee filters for department, district, and block are resolved through the employee's office relationship. Office and employee list responses populate the related labels used by the admin UI.
+All paths use `/api/v1`.
 
-## Architecture rules
-- A department has many offices.
-- A district has many blocks.
-- An office belongs to one department and one district, and may optionally belong to one block.
-- An office has many employees.
-- Each employee belongs to one office and one designation.
-- Department administrators are scoped to their assigned department for office and employee data.
-- Referenced records cannot be deleted; deactivate them instead.
+### Anonymous public directory (GET only)
 
-## Security/production caveat
-This is a development starter, not a production certification. Before production deployment, add dedicated resource DTOs and automated unit/e2e tests, audit logging, rate limiting, a robust policy for access to shared district/block/designation records, and review environment secrets and administrator provisioning. The frontend should not be treated as an authorization boundary.
+- `GET /public/directory/summary`
+- `GET /public/directory/departments`
+- `GET /public/directory/designations`
+- `GET /public/directory/districts`
+- `GET /public/directory/employees`
+- `GET /public/directory/employees/:id`
 
+Officer listing accepts `page` (1-based), `limit` (1–100), `search`, `location`, `departmentId`, `districtId`, `blockId`, `officeId`, `designationId`, `status=active|inactive`, `letter=A-Z`, `sortBy=name|createdAt`, and `order=asc|desc`. Results are filtered and paginated by MongoDB; the envelope is `{ data, total, page, limit, totalPages }`. Text search covers officer name, designation, office and district; location can be constrained separately. Reference lists only include active values represented by published officer records, across all departments.
 
-## Type definitions and request validation
-- `src/schemas/*.schema.ts`: one Mongoose schema per collection, including field types, required fields, limits, defaults, references and indexes.
-- `src/dto/*.dto.ts`: request DTOs using `class-validator` decorators for each resource.
-- `src/dto/resource.dto.ts`: selects the DTO for each CRUD resource and validates POST/PATCH bodies, rejects unknown properties, and returns structured validation errors.
-- `src/schemas.ts`: schema registry used by the CRUD service.
+Only records explicitly marked `isPublic: true` appear. This is opt-in for new employee records (the schema default is false). The public response is an explicit allowlist: officer ID/name, designation name, office name, department name, district name, and active status. It deliberately omits phone, personal email, full date of birth, retirement data, employee codes, database metadata, passwords, and tokens. Review disclosure rules before extending this projection. Existing records with `isPublic: true` remain eligible; records without the flag are not public. Administrators must review and explicitly publish approved records.
 
+### Authenticated administrator API
 
-## NestJS module structure
-Each resource has its own feature module and controller:
-- `departments/`, `districts/`, `blocks/`, `offices/`, `designations/`, `employees/`, `admin-users/`
-- `auth/` contains login DTO, service, controller and module.
-- `dashboard/` contains its own controller and module.
-- `common/` contains the shared CRUD service, JWT guard and validation helper.
-- `schemas/` contains one Mongoose schema file per collection.
-- Each resource folder has a `dto/` folder for class-validator request DTOs.
+- `POST /auth/login` is the only unauthenticated admin/auth route.
+- `GET /auth/profile`, `/dashboard/summary`, all resource GET routes, and all create/update/delete routes require a JWT bearer token.
+- Existing resources: `/departments`, `/districts`, `/blocks`, `/offices`, `/designations`, `/employees`, `/admin-users`.
 
+The public controller is a separate GET-only module and does not call the general CRUD service. Do not remove guards from the admin resource controllers to enable mobile access.
 
-## Verification notes (2026-10-23)
-Feature modules register their dedicated controllers for CRUD routes. Run `npm install`, `npm run build`, `npm run seed`, and `npm run start:dev` locally to verify against your MongoDB instance. Full runtime/API integration was not verified in this generation environment.
+## Swagger verification
+
+Open `/api/docs`, expand the **Public directory** tag, and call the public GET operations without clicking Authorize or supplying a token. Try employee listing with search and filter parameters, then follow the returned `id` to the detail endpoint. For protected operations, try a resource GET or POST without a bearer token and verify that the API rejects it (normally HTTP 401). The public endpoints return no write operations.
+
+## Environment and deployment
+
+- `MONGODB_URI`: production MongoDB URI, stored only in the deployment platform's secret manager.
+- `JWT_SECRET`: randomly generated secret with at least 32 characters; rotate through a planned token invalidation process.
+- `JWT_EXPIRES_IN`: token duration (default `1d`).
+- `PORT`: platform-provided port or `3000`.
+- `CORS_ORIGINS`: exact trusted browser origins, comma-separated; do not use `*`. Native Expo requests do not rely on CORS, but Expo web/admin browser origins must be listed.
+- Set `NODE_ENV=production`, deploy behind HTTPS, use network-restricted MongoDB access, backups, logs/monitoring, rate limiting, and controlled administrator provisioning. Never use development seed credentials in production.
+
+A typical deployment builds with `npm ci` and `npm run build`, then starts with `npm start`; provide the environment variables through the host's secret/configuration settings, not a checked-in `.env`. Configure the Expo app's `EXPO_PUBLIC_API_BASE_URL` to the deployed HTTPS API ending in `/api/v1` and rebuild/restart the client. Do not expose MongoDB directly to the mobile application.
+
+## Data model
+
+Employees reference offices and designations. Department and district information is resolved through the employee's office. The public API queries existing MongoDB collections and uses the existing models; no data migration is required for the new routes, though older records lacking `isPublic: true` will remain private until reviewed and explicitly published.
+
+## End-to-end testing checklist
+
+- [ ] Anonymous request to each public GET route succeeds without an `Authorization` header.
+- [ ] Anonymous `GET /public/directory/employees/:id` succeeds only for an explicitly published officer; unpublished/missing IDs return not found.
+- [ ] Public list and detail responses contain no `mobile`, `email`, `dateOfBirth`, `employeeCode`, `passwordHash`, token, or unrelated Mongo fields.
+- [ ] Published officers from multiple departments are returned; each department/designation/district reference list only represents public officers.
+- [ ] Search matches officer name, designation, office, and district; location and relationship filters narrow results in combination.
+- [ ] Page/limit metadata, stable name sorting, letter, status, and maximum page size behave as documented.
+- [ ] `GET /employees`, `GET /departments`, dashboard summary, profile, and create/update/delete remain rejected without JWT.
+- [ ] Valid super-admin and department-admin tokens retain the existing write scope and cannot write through public endpoints (no public write route exists).
+- [ ] CORS permits configured frontend origins and does not send credential cookies or wildcard origins.
+- [ ] Production startup fails if `JWT_SECRET` is absent/too short; local `.env` is not included in source or release archives.
+- [ ] Backend `npm run build` and Expo `npm run typecheck` pass; verify actual device/emulator networking.
