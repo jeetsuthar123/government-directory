@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "State IT Directory",
+    "slug": "state-it-directory",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "in.rajasthan.stateitdirectory"
+    },
+    "android": {
+      "package": "in.rajasthan.stateitdirectory",
+      "adaptiveIcon": {
+        "backgroundColor": "#ead5ce"
+      }
+    },
+    "plugins": []
+  }
+}

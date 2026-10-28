@@ -1,0 +1,17 @@
+export const COLORS = {
+  paper: '#fffaf4',
+  peach: '#ead5ce',
+  ink: '#29282b',
+  blue: '#2eafe0',
+  blueDark: '#087eaa',
+  cyan: '#00b7c4',
+  orange: '#f28a00',
+  green: '#439b8e',
+  brown: '#a83200',
+  teal: '#078ba6',
+  muted: '#777779',
+  line: '#477b91',
+  paleBlue: '#e5f4f9',
+  white: '#ffffff',
+  red: '#b42318',
+};
