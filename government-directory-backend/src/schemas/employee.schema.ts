@@ -28,7 +28,9 @@ export const EmployeeSchema = new Schema(
       sparse: true,
       unique: true,
     },
+    showEmployeeCodePublic: { type: Boolean, default: false },
     mobile: { type: String, trim: true, maxlength: 30 },
+    showMobilePublic: { type: Boolean, default: false },
     email: { type: String, trim: true, lowercase: true, maxlength: 254 },
     dateOfBirth: {
       type: Date,
@@ -37,6 +39,9 @@ export const EmployeeSchema = new Schema(
         message: "dateOfBirth cannot be in the future",
       },
     },
+    dateOfRetirement: { type: Date },
+    showDateOfBirthPublic: { type: Boolean, default: false },
+    showDateOfRetirementPublic: { type: Boolean, default: false },
     // Publication is opt-in. The public API still returns a strict allowlist only.
     isPublic: { type: Boolean, default: false, index: true },
     isActive: { type: Boolean, default: true, index: true },

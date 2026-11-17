@@ -45,9 +45,9 @@ export class PublicDirectoryService {
     const department = office.departmentId || {};
     const district = office.districtId || {};
     const designation = record.designationId || {};
-    // Deliberately allowlist directory fields. Do not return personal contact details,
-    // full birth dates, employee codes, database metadata, or authentication fields.
-    return {
+    // Keep personal dates out of public responses unless an administrator has
+    // explicitly enabled public display for each field.
+    const publicOfficer: Record<string, any> = {
       id: String(record._id),
       _id: String(record._id),
       name: record.name,
@@ -69,6 +69,15 @@ export class PublicDirectoryService {
       },
       isActive: record.isActive !== false,
     };
+    if (record.showDateOfBirthPublic && record.dateOfBirth)
+      publicOfficer["dateOfBirth"] = record.dateOfBirth;
+    if (record.showDateOfRetirementPublic && record.dateOfRetirement)
+      publicOfficer["dateOfRetirement"] = record.dateOfRetirement;
+    if (record.showEmployeeCodePublic && record.employeeCode)
+      publicOfficer["employeeCode"] = record.employeeCode;
+    if (record.showMobilePublic && record.mobile)
+      publicOfficer["mobile"] = record.mobile;
+    return publicOfficer;
   }
 
   private employeeQuery() {

@@ -38,7 +38,7 @@ The app calls only anonymous GET endpoints; it does not send an `Authorization` 
 
 Directory search and filters are sent to the server. Supported query parameters include `search`, `location`, `departmentId`, `districtId`, `blockId`, `officeId`, `designationId`, `status=active|inactive`, `letter=A-Z`, `page`, `limit` (maximum 100), `sortBy=name|createdAt`, and `order=asc|desc`. Responses use `{ data, total, page, limit, totalPages }` for paginated officers. Department, designation, and district choices are restricted to active references represented in published records.
 
-Public officer responses are intentionally allowlisted to name, designation, office, department, district, and active status. They do not include phone, email, full date of birth, retirement data, employee codes, database metadata, passwords, or tokens. Detail screens only display contact actions if the API later supplies approved public contact values. Birthday and retirement views remain in the notebook navigation, but these private/unsupported fields are not returned by the current public API.
+Public officer responses are intentionally allowlisted to name, designation, office, department, district, and active status. Email, database metadata, passwords, and tokens are not returned. Mobile number, employee code, date of birth, and retirement date appear only when an administrator explicitly enables the matching per-employee public-display option; all remain private by default. Birthday and retirement views use only dates approved for public display.
 
 ## Source structure
 
@@ -57,6 +57,6 @@ Public officer responses are intentionally allowlisted to name, designation, off
 - [ ] Department, designation, district, status, and A–Z filters work together.
 - [ ] “Load more” appends subsequent server pages; retry works after offline/error state.
 - [ ] Department choices and officers cover multiple departments.
-- [ ] No bearer header is sent and no phone/email/DOB/employee code appears unless separately approved by a future API contract.
+- [ ] No bearer header is sent; no phone/email/employee code appears, and personal dates appear only when explicitly approved for public display.
 - [ ] Notebook tabs, home/back controls, details return behavior, and Android hardware back work.
 - [ ] `npm run typecheck` and `npx expo-doctor` pass.

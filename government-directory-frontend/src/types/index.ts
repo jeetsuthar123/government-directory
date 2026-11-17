@@ -1,4 +1,4 @@
-export type UserRole = 'super_admin' | 'department_admin';
+export type UserRole = "super_admin" | "department_admin";
 
 export interface UserProfile {
   name: string;
@@ -33,9 +33,14 @@ export interface DirectoryRecord {
   officeId?: string | DirectoryRecord;
   designationId?: string | DirectoryRecord;
   employeeCode?: string;
+  showEmployeeCodePublic?: boolean;
   mobile?: string;
+  showMobilePublic?: boolean;
   email?: string;
   dateOfBirth?: string;
+  dateOfRetirement?: string;
+  showDateOfBirthPublic?: boolean;
+  showDateOfRetirementPublic?: boolean;
   isPublic?: boolean;
   isActive?: boolean;
   address?: string;
@@ -59,7 +64,17 @@ export interface DashboardSummary {
   employees: number;
 }
 
-export type FieldKind = 'text' | 'email' | 'tel' | 'number' | 'date' | 'textarea' | 'boolean' | 'select' | 'password' | 'multiselect';
+export type FieldKind =
+  | "text"
+  | "email"
+  | "tel"
+  | "number"
+  | "date"
+  | "textarea"
+  | "boolean"
+  | "select"
+  | "password"
+  | "multiselect";
 
 export interface FieldOption {
   label: string;
@@ -81,13 +96,13 @@ export interface FieldConfig {
 }
 
 export type ResourceKey =
-  | 'departments'
-  | 'districts'
-  | 'blocks'
-  | 'offices'
-  | 'designations'
-  | 'employees'
-  | 'admin-users';
+  | "departments"
+  | "districts"
+  | "blocks"
+  | "offices"
+  | "designations"
+  | "employees"
+  | "admin-users";
 
 export interface ResourceConfig {
   key: ResourceKey;

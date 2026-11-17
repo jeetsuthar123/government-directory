@@ -52,7 +52,9 @@ export default function DashboardScreen({
     <ScrollView style={styles.flex} contentContainerStyle={styles.content}>
       <View style={styles.welcome}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.eyebrow}>STATE IT DIRECTORY</Text>
+          <Text style={styles.eyebrow}>
+            Department of Skill, Employment & Entrepreneurship Directory
+          </Text>
           <Text style={styles.welcomeTitle}>Dashboard</Text>
           <Text style={styles.welcomeSub}>Public officer directory</Text>
         </View>
@@ -173,7 +175,7 @@ const styles = StyleSheet.create({
   welcome: { flexDirection: "row", alignItems: "center", marginBottom: 13 },
   eyebrow: {
     color: COLORS.blueDark,
-    fontSize: 9,
+    fontSize: 15,
     fontWeight: "900",
     letterSpacing: 1,
   },

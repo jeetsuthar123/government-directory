@@ -12,6 +12,7 @@ export interface Officer {
   district: string;
   phone: string;
   mobile?: string;
+  showMobilePublic?: boolean;
   email: string;
   dob: string;
   dateOfBirth?: string;

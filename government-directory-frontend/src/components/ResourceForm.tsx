@@ -199,9 +199,10 @@ export default function ResourceForm({
           <span>
             <strong>{field.label}</strong>
             <small>
-              {field.name === "isPublic"
-                ? "Allow this profile to appear in the public directory."
-                : "Enable or disable this record."}
+              {field.help ||
+                (field.name === "isPublic"
+                  ? "Allow this profile to appear in the public directory."
+                  : "Enable or disable this record.")}
             </small>
           </span>
           <input

@@ -36,7 +36,7 @@ All paths use `/api/v1`.
 
 Officer listing accepts `page` (1-based), `limit` (1–100), `search`, `location`, `departmentId`, `districtId`, `blockId`, `officeId`, `designationId`, `status=active|inactive`, `letter=A-Z`, `sortBy=name|createdAt`, and `order=asc|desc`. Results are filtered and paginated by MongoDB; the envelope is `{ data, total, page, limit, totalPages }`. Text search covers officer name, designation, office and district; location can be constrained separately. Reference lists only include active values represented by published officer records, across all departments.
 
-Only records explicitly marked `isPublic: true` appear. This is opt-in for new employee records (the schema default is false). The public response is an explicit allowlist: officer ID/name, designation name, office name, department name, district name, and active status. It deliberately omits phone, personal email, full date of birth, retirement data, employee codes, database metadata, passwords, and tokens. Review disclosure rules before extending this projection. Existing records with `isPublic: true` remain eligible; records without the flag are not public. Administrators must review and explicitly publish approved records.
+Only records explicitly marked `isPublic: true` appear. This is opt-in for new employee records (the schema default is false). The public response is an explicit allowlist: officer ID/name, designation name, office name, department name, district name, and active status. Personal email, database metadata, passwords, and tokens are never returned. Mobile number is returned only when `showMobilePublic` is explicitly enabled. Employee code is returned only when `showEmployeeCodePublic` is explicitly enabled. Date of birth and retirement date are returned only when the corresponding `showDateOfBirthPublic` or `showDateOfRetirementPublic` flag is explicitly enabled on that employee; all four flags default to false. Administrators must review disclosure rules and obtain appropriate approval before enabling them. Existing records with `isPublic: true` remain eligible, but these personal fields remain private unless separately enabled.
 
 ### Authenticated administrator API
 
@@ -69,7 +69,7 @@ Employees reference offices and designations. Department and district informatio
 
 - [ ] Anonymous request to each public GET route succeeds without an `Authorization` header.
 - [ ] Anonymous `GET /public/directory/employees/:id` succeeds only for an explicitly published officer; unpublished/missing IDs return not found.
-- [ ] Public list and detail responses contain no `mobile`, `email`, `dateOfBirth`, `employeeCode`, `passwordHash`, token, or unrelated Mongo fields.
+- [ ] Public list and detail responses omit employee codes and dates unless their corresponding per-field public flags are enabled; they never contain `mobile`, `email`, `passwordHash`, token, or unrelated Mongo fields.
 - [ ] Published officers from multiple departments are returned; each department/designation/district reference list only represents public officers.
 - [ ] Search matches officer name, designation, office, and district; location and relationship filters narrow results in combination.
 - [ ] Page/limit metadata, stable name sorting, letter, status, and maximum page size behave as documented.

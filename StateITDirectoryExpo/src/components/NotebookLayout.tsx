@@ -12,7 +12,7 @@ function Brand() {
         <View style={styles.logoC} />
       </View>
       <Text style={styles.brandText}>
-        D<Text style={{ color: COLORS.blue }}>o</Text>IT.C
+        D<Text style={{ color: COLORS.blue }}>S</Text>EE
       </Text>
     </View>
   );
@@ -42,8 +42,8 @@ export default function NotebookLayout({
         <Brand />
         <View style={{ flex: 1 }} />
         <View style={styles.crest}>
-          <Text style={styles.crestTop}>RAJ</Text>
-          <Text style={styles.crestBottom}>IT</Text>
+          <Text style={styles.crestTop}>DSEE</Text>
+          {/* <Text style={styles.crestBottom}>IT</Text> */}
         </View>
         <Pressable
           accessibilityRole="button"

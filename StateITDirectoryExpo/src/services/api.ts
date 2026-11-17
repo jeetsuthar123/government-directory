@@ -94,7 +94,10 @@ function normalizeOfficer(item: JsonRecord, index: number): Officer {
     department: asString(department?.name ?? item.department),
     district: asString(district?.name ?? item.district),
     phone: asString(item.mobile ?? item.phone ?? item.contactNumber),
+    mobile:
+      asString(item.mobile ?? item.phone ?? item.contactNumber) || undefined,
     email: asString(item.email),
+    employeeCode: asString(item.employeeCode) || undefined,
     dob: formatDate(dobValue),
     dateOfBirth: asString(dobValue),
     retirement: formatDate(retirementValue),

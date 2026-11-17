@@ -142,13 +142,11 @@ export default function OfficerDetailsScreen({
           </View>
         ) : null}
       </View>
-      {officer.phone || officer.mobile ? (
-        <DetailRow
-          label="Contact number"
-          value={officer.phone || officer.mobile}
-          icon="call-outline"
-        />
-      ) : null}
+      <DetailRow
+        label="Mobile number"
+        value={officer.mobile || officer.phone}
+        icon="call-outline"
+      />
       {officer.email ? (
         <DetailRow
           label="Email address"
@@ -181,11 +179,11 @@ export default function OfficerDetailsScreen({
         value={officer.retirement || officer.dateOfRetirement}
         icon="calendar-outline"
       />
-      <DetailRow
+      {/* <DetailRow
         label="Seniority"
         value={officer.seniority != null ? String(officer.seniority) : ""}
         icon="list-outline"
-      />
+      /> */}
       <DetailRow
         label="Employee code"
         value={officer.employeeCode}

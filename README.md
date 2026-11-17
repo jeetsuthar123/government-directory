@@ -19,7 +19,7 @@ Backend Swagger is available at `http://localhost:3000/api/docs`. See [backend s
 
 ## Publication and privacy
 
-New employee records default to `isPublic: false`. An administrator must review and explicitly publish directory records. Public responses expose only officer name, designation, office, department, district, and active status; they exclude personal contact details, DOB, employee codes, database metadata, passwords, and tokens. Review existing `isPublic: true` records before deploying this public API. The existing authenticated CRUD routes were not made public.
+New employee records default to `isPublic: false`. An administrator must review and explicitly publish directory records. Public responses expose officer name, designation, office, department, district, and active status; they exclude personal email, database metadata, passwords, and tokens. Mobile number, employee code, date of birth, and retirement date are returned only when an administrator explicitly enables their respective per-employee public-display setting; all are private by default. Review existing `isPublic: true` records before deploying this public API. The existing authenticated CRUD routes were not made public.
 
 ## End-to-end checklist
 
